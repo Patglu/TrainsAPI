@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrainTimesAPI v1 — API Reference Contract</title>
+  <!-- MathJax for high-fidelity LaTeX rendering -->
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --sys:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+      --mono:ui-monospace,"SF Mono","Cascadia Code","Fira Code","Consolas","Liberation Mono",monospace;
+      --bg:#0d0f12;--bg-raised:#13161b;--bg-card:#181c22;--bg-code:#0a0c0f;
+      --border:#232830;--border-dim:#1a1e24;
+      --text:#d4d8e0;--text-dim:#6b7280;--text-muted:#3d4451;
+      --accent:#8b5cf6;--accent-dim:#4c2d8a;--accent-glow:rgba(139,92,246,.12);
+      --green:#34d399;--green-dim:rgba(52,211,153,.10);
+      --rose:#fb7185;--rose-dim:rgba(251,113,133,.10);
+      --amber:#fbbf24;--amber-dim:rgba(251,191,36,.10);
+      --sky:#38bdf8;--sky-dim:rgba(56,189,248,.10);
+      --purple:#c084fc;--purple-dim:rgba(192,132,252,.10);
+      --syn-kw:#ff7b72;--syn-ty:#79c0ff;--syn-st:#a5d6ff;
+      --syn-nm:#d2a8ff;--syn-cm:#4b5563;--syn-at:#ffa657;--syn-pl:#cdd5e0;
+    }
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:var(--sys);font-size:15px;line-height:1.65;min-height:100vh;background-image:linear-gradient(var(--border-dim) 1px,transparent 1px),linear-gradient(90deg,var(--border-dim) 1px,transparent 1px);background-size:40px 40px;background-position:-1px -1px}
+    .shell{display:flex;min-height:100vh}
+    .sidebar{width:260px;flex-shrink:0;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;background:var(--bg-raised);border-right:1px solid var(--border);overflow-y:auto;z-index:50}
+    .sb-head{padding:24px 20px 16px;border-bottom:1px solid var(--border)}
+    .sb-phase{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+    .sb-title{font-size:14px;font-weight:700;color:#f0f2f5;line-height:1.3}
+    .sb-sub{font-size:11px;color:var(--text-dim);margin-top:4px}
+    .nav{list-style:none;padding:10px 0;flex:1}
+    .nav-section{font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);padding:14px 20px 5px}
+    .nav a{display:flex;align-items:flex-start;gap:9px;padding:7px 20px;font-size:12px;font-weight:400;color:var(--text-dim);text-decoration:none;border-left:2px solid transparent;transition:all .15s;line-height:1.4}
+    .nav a:hover{color:var(--text);background:rgba(255,255,255,.03);border-left-color:var(--border)}
+    .nav a.active{color:var(--accent);background:var(--accent-glow);border-left-color:var(--accent);font-weight:500}
+    .nav-num{font-size:10px;font-weight:500;color:var(--text-muted);flex-shrink:0;margin-top:1px;min-width:18px}
+    .nav a.active .nav-num{color:var(--accent)}
+    .main{flex:1;min-width:0;display:flex;flex-direction:column}
+    .topbar{height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;border-bottom:1px solid var(--border);background:var(--bg-raised);position:sticky;top:0;z-index:40}
+    .topbar-bc{font-size:11px;color:var(--text-muted);display:flex;align-items:center;gap:8px}
+    .topbar-bc span{color:var(--text-dim)}
+    .content{flex:1;padding:40px 48px 80px;max-width:960px}
+    .sec{display:none}.sec.active{display:block;animation:fi .2s ease}
+    @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+    .sec-eyebrow{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+    .sec-h{font-size:28px;font-weight:700;color:#eef0f4;margin-bottom:4px;line-height:1.2}
+    .sec-tag{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:20px}
+    h3{font-size:16px;font-weight:600;color:#eef0f4;margin:32px 0 12px;letter-spacing:.01em;border-bottom:1px solid var(--border-dim);padding-bottom:6px}
+    p{color:var(--text-dim);font-size:14px;line-height:1.75;margin-bottom:12px}
+    code{font-family:var(--mono);font-size:12px;background:var(--bg-card);color:var(--purple);padding:2px 6px;border-radius:4px;border:1px solid var(--border)}
+    strong{color:#eef0f4;font-weight:600}
+    .cw{border:1px solid var(--border);border-radius:8px;overflow:hidden;margin:16px 0;background:var(--bg-code)}
+    .ch{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:var(--bg-card);border-bottom:1px solid var(--border)}
+    .cl{font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em}
+    .cf{font-size:11px;color:var(--text-dim)}
+    .cp{font-size:10px;font-weight:500;padding:4px 10px;background:var(--border);color:var(--text-dim);border:none;border-radius:4px;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.08em;font-family:var(--sys)}
+    .cp:hover{background:var(--border-dim);color:var(--text)}.cp.ok{color:var(--green)}
+    .cb{overflow-x:auto}.cb pre{padding:18px 20px;font-family:var(--mono);font-size:12.5px;line-height:1.7;white-space:pre}
+    .line{display:flex}
+    .ln{user-select:none;color:var(--text-muted);text-align:right;min-width:32px;margin-right:20px;opacity:.5;font-size:11px;flex-shrink:0}
+    .kw{color:var(--syn-kw)}.ty{color:var(--syn-ty)}.st{color:var(--syn-st)}
+    .nm{color:var(--syn-nm)}.cm{color:var(--syn-cm);font-style:italic}
+    .at{color:var(--syn-at)}.pl{color:var(--syn-pl)}
+    .callout{border-radius:8px;padding:14px 16px;margin:14px 0;font-size:13.5px;line-height:1.65;border-left:3px solid}
+    .callout-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+    .callout.accent{border-color:var(--accent);background:var(--accent-glow)}.callout.accent .callout-label{color:var(--accent)}
+    .callout.sky{border-color:var(--sky);background:var(--sky-dim)}.callout.sky .callout-label{color:var(--sky)}
+    .callout.green{border-color:var(--green);background:var(--green-dim)}.callout.green .callout-label{color:var(--green)}
+    .callout.amber{border-color:var(--amber);background:var(--amber-dim)}.callout.amber .callout-label{color:var(--amber)}
+    .callout.rose{border-color:var(--rose);background:var(--rose-dim)}.callout.rose .callout-label{color:var(--rose)}
+    .pag{display:flex;justify-content:space-between;align-items:center;margin-top:48px;padding-top:24px;border-top:1px solid var(--border)}
+    .pb{display:flex;align-items:center;gap:8px;font-family:var(--sys);font-size:13px;font-weight:500;padding:9px 18px;border-radius:6px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-dim);cursor:pointer;transition:all .15s;white-space:nowrap}
+    .pb:hover{border-color:var(--accent-dim);color:var(--text)}
+    .pb.pri{background:var(--accent-dim);border-color:var(--accent);color:#fff}
+    .pb.pri:hover{background:var(--accent)}
+    table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13.5px;text-align:left}
+    th,td{padding:12px 14px;border:1px solid var(--border-dim)}
+    th{background:var(--bg-raised);color:#eef0f4;font-weight:600}
+    td{color:var(--text-dim)}
+    tr:nth-child(even){background:rgba(255,255,255,.01)}
+    .param-name{font-family:var(--mono);color:var(--purple);font-weight:600;font-size:12.5px}
+    .param-type{font-family:var(--mono);color:var(--text-muted);font-size:11.5px;margin-left:6px}
+    .badge{display:inline-block;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+    .badge.get{background:rgba(56,189,248,.12);color:var(--sky);border:1px solid rgba(56,189,248,.3)}
+    .badge.req{background:var(--rose-dim);color:var(--rose);border:1px solid rgba(251,113,133,.2)}
+    .badge.opt{background:var(--sky-dim);color:var(--text-dim);border:1px solid var(--border)}
+    .status-code{font-family:var(--mono);font-weight:700}
+    .status-code.ok{color:var(--green)}
+    .status-code.warn{color:var(--amber)}
+    .status-code.err{color:var(--rose)}
+    @media(max-width:768px){.sidebar{display:none}.content{padding:24px 20px 60px}}
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ══ SIDEBAR ══ -->
+  <nav class="sidebar">
+    <div class="sb-head">
+      <div class="sb-phase">v1 API Contract</div>
+      <div class="sb-title">TrainTimesAPI Reference</div>
+      <div class="sb-sub">Live Timetables &amp; Routing</div>
+    </div>
+    <ul class="nav">
+      <li class="nav-section">Reference</li>
+      <li><a href="#" data-s="overview" class="nav-link active"><span class="nav-num">—</span>Overview &amp; Auth</a></li>
+      <li><a href="#" data-s="health" class="nav-link"><span class="nav-num">1</span>GET /health</a></li>
+      <li><a href="#" data-s="stations" class="nav-link"><span class="nav-num">2</span>GET /v1/stations</a></li>
+      <li><a href="#" data-s="journeys" class="nav-link"><span class="nav-num">3</span>GET /v1/journeys</a></li>
+      <li><a href="#" data-s="caching" class="nav-link"><span class="nav-num">4</span>Caching &amp; ETags</a></li>
+      <li><a href="#" data-s="limits" class="nav-link"><span class="nav-num">5</span>Rate Limiting</a></li>
+      <li><a href="#" data-s="errors" class="nav-link"><span class="nav-num">6</span>Errors (RFC 7807)</a></li>
+      <li><a href="#" data-s="clients" class="nav-link"><span class="nav-num">7</span>iOS &amp; Android Guide</a></li>
+    </ul>
+  </nav>
+
+  <!-- ══ MAIN ══ -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-bc">TrainTimesAPI Contract &nbsp;›&nbsp; <span id="bc-sec">Overview</span></div>
+      <div class="topbar-n" id="cnt">1 / 8</div>
+    </div>
+
+    <div class="content">
+
+      <!-- ══════════════════════ OVERVIEW & AUTH ══════════════════════ -->
+      <div class="sec active" id="sec-overview">
+        <div class="sec-eyebrow">API Architecture</div>
+        <div class="sec-h">API Overview &amp; Authentication</div>
+        <div class="sec-tag">Gautrain Transit Timetable Layer Contract</div>
+
+        <p>Welcome to the formal API contract and reference manual for <strong>TrainTimesAPI v1</strong>. This interface mediates between mobile client requests and the upstream Gautrain timetable microservices. To ensure low-latency performance and prevent upstream IP blocking, the API has a robust, layered, thread-safe caching system with telemetry indicators built directly into every envelope.</p>
+
+        <h3>Base URL</h3>
+        <div class="cw">
+          <div class="ch"><span class="cl">environment</span><span class="cf">Host URL Configuration</span></div>
+          <div class="cb"><pre>Production URL:  https://your-production-server.com
+Development URL: http://localhost:9292</pre></div>
+        </div>
+
+        <h3>Authentication Contract</h3>
+        <p>Every call to a protected <code>/v1/*</code> endpoint requires authorization via a customized HTTP request header. The server performs a constant-time secure string comparison to ward off timing disclosure vulnerability attacks.</p>
+
+        <table>
+          <thead>
+          <tr>
+            <th>Header Key</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Contract Failure Code</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td class="param-name">X-Api-Key</td>
+            <td><span class="param-type">String</span></td>
+            <td>Your secure API secret token (configurable in server environment as <code>API_KEY</code>).</td>
+            <td><code>401 Unauthorized</code> (unauthorized)</td>
+          </tr>
+          </tbody>
+        </table>
+
+        <div class="callout sky">
+          <div class="callout-label">🛡️ Security Constraint</div>
+          Failure to supply the <code>X-Api-Key</code> header or submitting a value mismatch results in an immediate <code>401 Unauthorized</code> response wrapper without hitting any upstream client endpoints. The <code>/health</code> endpoint is intentionally exempt from authentication.
+        </div>
+
+        <div class="pag">
+          <button class="pb" style="opacity:.3;cursor:default">&larr; Back</button>
+          <button class="pb pri" onclick="nav(1)">GET /health &rarr;</button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════ GET /HEALTH ══════════════════════ -->
+      <div class="sec" id="sec-health">
+        <div class="sec-eyebrow">Endpoints — System Status</div>
+        <div class="sec-h">GET /health</div>
+        <div class="sec-tag"><span class="badge get">GET</span> Unauthenticated load balancer check</div>
+
+        <p>A fast, unauthenticated route used by infrastructure load balancers and deployment monitoring systems to verify that the Sinatra process is bound, alive, and successfully listening for traffic.</p>
+
+        <h3>Contract Output Payload (200 OK)</h3>
+        <div class="cw">
+          <div class="ch"><span class="cl">json</span><span class="cf">Health check payload</span><button class="cp" onclick="copyCode('health-json',this)">Copy</button></div>
+          <div class="cb"><pre id="pre-health-json"><div class="line"><span class="ln">1</span><span class="pl">{</span></div>
+<div class="line"><span class="ln">2</span><span class="pl">  </span><span class="st">"data"</span><span class="pl">: {</span></div>
+<div class="line"><span class="ln">3</span><span class="pl">    </span><span class="st">"status"</span><span class="pl">: </span><span class="st">"ok"</span></div>
+<div class="line"><span class="ln">4</span><span class="pl">  },</span></div>
+<div class="line"><span class="ln">5</span><span class="pl">  </span><span class="st">"meta"</span><span class="pl">: {</span></div>
+<div class="line"><span class="ln">6</span><span class="pl">    </span><span class="st">"as_of"</span><span class="pl">: </span><span class="st">"2026-05-28T12:00:00Z"</span></div>
+<div class="line"><span class="ln">7</span><span class="pl">  }</span></div>
+<div class="line"><span class="ln">8</span><span class="pl">}</span></div></pre></div>
+        </div>
+
+        <div class="pag">
+          <button class="pb" onclick="nav(-1)">&larr; Overview &amp; Auth</button>
+          <button class="pb pri" onclick="nav(1)">GET /v1/stations &rarr;</button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════ GET /V1/STATIONS ══════════════════════ -->
+      <div class="sec" id="sec-stations">
+        <div class="sec-eyebrow">Endpoints — Static Stations</div>
+        <div class="sec-h">GET /v1/stations</div>
+        <div class="sec-tag"><span class="badge get">GET</span> Retrieve the list of active Gautrain stations</div>
+
+        <p>Fetches the list of exactly ten physical Gautrain stations. Since Gautrain's network topography is static, this endpoint responds with an aggressive 24-hour cache lifespan configuration for client-side and CDN proxy storage nodes.</p>
+
+        <h3>HTTP Request Headers</h3>
+        <div class="cw">
+          <div class="ch"><span class="cl">http</span><span class="cf">Request Header Structure</span><button class="cp" onclick="copyCode('stations-req',this)">Copy</button></div>
+          <div class="cb"><pre id="pre-stations-req"><div class="line"><span class="ln">1</span><span class="pl">GET /v1/stations HTTP/1.1</span></div>
+<div class="line"><span class="ln">2</span><span class="pl">Host: localhost:9292</span></div>
+<div class="line"><span class="ln">3</span><span class="pl">X-Api-Key: secure_app_key</span></div>
+<div class="line"><span class="ln">4</span><span class="cm"># Supply previous ETag to utilize 304 Conditional caching</span></div>
+<div class="line"><span class="ln">5</span><span class="pl">If-None-Match: "w/e939a3f2b18aa2a98f123"</span></div></pre></div>
+        </div>
+
+        <h3>HTTP Response Headers</h3>
+        <table>
+          <thead>
+          <tr>
+            <th>Header</th>
+            <th>Value / Strategy</th>
+            <th>Purpose</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td class="param-name">Cache-Control</td>
+            <td><code>public, max-age=86400</code></td>
+            <td>Instructs clients, proxies, and CDNs to cache this payload in memory for up to 24 hours.</td>
+          </tr>
+          <tr>
+            <td class="param-name">ETag</td>
+            <td><code>"hash_string"</code></td>
+            <td>SHA-256 fingerprint of the response payload for conditional GET validation.</td>
+          </tr>
+          </tbody>
+        </table>
+
+        <h3>Contract Output Payload (200 OK)</h3>
+        <div class="cw">
+          <div class="ch"><span class="cl">json</span><span class="cf">Successful Station Response</span><button class="cp" onclick="copyCode('stations-json',this)">Copy</button></div>
+          <div class="cb"><pre id="pre-stations-json"><div class="line"><span class="ln">1</span><span class="pl">{</span></div>
+<div class="line"><span class="ln">2</span><span class="pl">  </span><span class="st">"data"</span><span class="pl">: {</span></div>
+<div class="line"><span class="ln">3</span><span class="pl">    </span><span class="st">"stations"</span><span class="pl">: [</span></div>
+<div class="line"><span class="ln">4</span><span class="pl">      {</span></div>
+<div class="line"><span class="ln">5</span><span class="pl">        </span><span class="st">"id"</span><span class="pl">: </span><span class="st">"rosebank"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">6</span><span class="pl">        </span><span class="st">"name"</span><span class="pl">: </span><span class="st">"Rosebank"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">7</span><span class="pl">        </span><span class="st">"latitude"</span><span class="pl">: </span><span class="nm">-26.14622</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">8</span><span class="pl">        </span><span class="st">"longitude"</span><span class="pl">: </span><span class="nm">28.04451</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">9</span><span class="pl">        </span><span class="st">"modes"</span><span class="pl">: [</span><span class="st">"bus"</span><span class="pl">, </span><span class="st">"rail"</span><span class="pl">]</span></div>
+<div class="line"><span class="ln">10</span><span class="pl">      }</span></div>
+<div class="line"><span class="ln">11</span><span class="pl">    ]</span></div>
+<div class="line"><span class="ln">12</span><span class="pl">  },</span></div>
+<div class="line"><span class="ln">13</span><span class="pl">  </span><span class="st">"meta"</span><span class="pl">: {</span></div>
+<div class="line"><span class="ln">14</span><span class="pl">    </span><span class="st">"count"</span><span class="pl">: </span><span class="nm">1</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">15</span><span class="pl">    </span><span class="st">"as_of"</span><span class="pl">: </span><span class="st">"2026-05-27T15:47:09Z"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">16</span><span class="pl">    </span><span class="st">"cache"</span><span class="pl">: {</span></div>
+<div class="line"><span class="ln">17</span><span class="pl">      </span><span class="st">"status"</span><span class="pl">: </span><span class="st">"fresh"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">18</span><span class="pl">      </span><span class="st">"cached_at"</span><span class="pl">: </span><span class="st">"2026-05-27T15:47:09Z"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">19</span><span class="pl">      </span><span class="st">"age_seconds"</span><span class="pl">: </span><span class="nm">12</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">20</span><span class="pl">      </span><span class="st">"ttl_seconds"</span><span class="pl">: </span><span class="nm">86400</span></div>
+<div class="line"><span class="ln">21</span><span class="pl">    }</span></div>
+<div class="line"><span class="ln">22</span><span class="pl">  }</span></div>
+<div class="line"><span class="ln">23</span><span class="pl">}</span></div></pre></div>
+        </div>
+
+        <div class="pag">
+          <button class="pb" onclick="nav(-1)">&larr; GET /health</button>
+          <button class="pb pri" onclick="nav(1)">GET /v1/journeys &rarr;</button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════ GET /V1/JOURNEYS ══════════════════════ -->
+      <div class="sec" id="sec-journeys">
+        <div class="sec-eyebrow">Endpoints — Dynamic Timetable</div>
+        <div class="sec-h">GET /v1/journeys</div>
+        <div class="sec-tag"><span class="badge get">GET</span> Query itineraries and fares between stations</div>
+
+        <p>Fetches real-time, optimized journeys between any two Gautrain stations. Includes support for opaque token pagination and optional geospatial geometry polylines for high-fidelity routing displays.</p>
+
+        <h3>Query Parameters</h3>
+        <table>
+          <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Constraint</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td class="param-name">from</td>
+            <td><span class="badge req">Required</span></td>
+            <td>Slug identifier of departure station (e.g. <code>rosebank</code>). Must be in <code>Station::VALID_SLUGS</code>.</td>
+          </tr>
+          <tr>
+            <td class="param-name">to</td>
+            <td><span class="badge req">Required</span></td>
+            <td>Slug identifier of arrival destination station (e.g. <code>marlboro</code>). Must not match <code>from</code>.</td>
+          </tr>
+          <tr>
+            <td class="param-name">after</td>
+            <td><span class="badge opt">Optional</span></td>
+            <td>Opaque pagination cursor token returned from a previous response's <code>next_cursor</code> field. (Base64 URL-Safe).</td>
+          </tr>
+          <tr>
+            <td class="param-name">include</td>
+            <td><span class="badge opt">Optional</span></td>
+            <td>Enables extra payload details. Set to <code>polylines</code> to populate coordinates inside itinerary legs.</td>
+          </tr>
+          </tbody>
+        </table>
+
+        <h3>Response Caching lifespan (Cache-Control max-age)</h3>
+        <p>The <code>Cache-Control</code> header's <code>max-age</code> value updates dynamically to reflect peak commute frequencies in South Africa Standard Time (SAST):</p>
+        <ul>
+          <li>Morning/Afternoon Peak (Mon–Fri 06:00–09:00, 15:00–18:30 SAST): <code>max-age=15</code></li>
+          <li>Weekday Off-Peak: <code>max-age=60</code></li>
+          <li>Weekends &amp; Holidays: <code>max-age=120</code></li>
+          <li>Paginated requests with <code>after</code>: <code>no-store</code>; these bypass server cache and return <code>meta.cache.status = "live_pagination"</code>.</li>
+        </ul>
+
+        <h3>Contract Output Payload (200 OK)</h3>
+        <div class="cw">
+          <div class="ch"><span class="cl">json</span><span class="cf">Successful Timetable Response</span><button class="cp" onclick="copyCode('journeys-json',this)">Copy</button></div>
+          <div class="cb"><pre id="pre-journeys-json"><div class="line"><span class="ln">1</span><span class="pl">{</span></div>
+<div class="line"><span class="ln">2</span><span class="pl">  </span><span class="st">"data"</span><span class="pl">: {</span></div>
+<div class="line"><span class="ln">3</span><span class="pl">    </span><span class="st">"journeys"</span><span class="pl">: [</span></div>
+<div class="line"><span class="ln">4</span><span class="pl">      {</span></div>
+<div class="line"><span class="ln">5</span><span class="pl">        </span><span class="st">"id"</span><span class="pl">: </span><span class="st">"0dd7e664-7e13-4329-ae5c-10bfe3a445bc"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">6</span><span class="pl">        </span><span class="st">"departure_time"</span><span class="pl">: </span><span class="st">"2026-05-28T03:33:36Z"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">7</span><span class="pl">        </span><span class="st">"arrival_time"</span><span class="pl">: </span><span class="st">"2026-05-28T03:41:21Z"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">8</span><span class="pl">        </span><span class="st">"duration_seconds"</span><span class="pl">: </span><span class="nm">503</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">9</span><span class="pl">        </span><span class="st">"distance_metres"</span><span class="pl">: </span><span class="nm">10891</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">10</span><span class="pl">        </span><span class="st">"total_fare_zar"</span><span class="pl">: </span><span class="nm">34.0</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">11</span><span class="pl">        </span><span class="st">"parking_cost_zar"</span><span class="pl">: </span><span class="nm">25.0</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">12</span><span class="pl">        </span><span class="st">"legs"</span><span class="pl">: [</span></div>
+<div class="line"><span class="ln">13</span><span class="pl">          {</span></div>
+<div class="line"><span class="ln">14</span><span class="pl">            </span><span class="st">"id"</span><span class="pl">: </span><span class="st">"6a65e54d-b8b9-4928-b6c7-df182f080635"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">15</span><span class="pl">            </span><span class="st">"mode"</span><span class="pl">: </span><span class="st">"rail"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">16</span><span class="pl">            </span><span class="st">"line_name"</span><span class="pl">: </span><span class="st">"North - South Line"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">17</span><span class="pl">            </span><span class="st">"line_colour"</span><span class="pl">: </span><span class="st">"#b12f23"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">18</span><span class="pl">            </span><span class="st">"departure_stop"</span><span class="pl">: </span><span class="st">"rosebank"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">19</span><span class="pl">            </span><span class="st">"arrival_stop"</span><span class="pl">: </span><span class="st">"marlboro"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">20</span><span class="pl">            </span><span class="st">"departure_time"</span><span class="pl">: </span><span class="st">"2026-05-28T03:33:36Z"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">21</span><span class="pl">            </span><span class="st">"arrival_time"</span><span class="pl">: </span><span class="st">"2026-05-28T03:41:21Z"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">22</span><span class="pl">            </span><span class="st">"duration_seconds"</span><span class="pl">: </span><span class="nm">503</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">23</span><span class="pl">            </span><span class="st">"distance_metres"</span><span class="pl">: </span><span class="nm">10891</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">24</span><span class="pl">            </span><span class="st">"headsign"</span><span class="pl">: </span><span class="st">"Marlboro"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">25</span><span class="pl">            </span><span class="st">"carriages"</span><span class="pl">: </span><span class="nm">4</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">26</span><span class="pl">            </span><span class="st">"fare_amount_zar"</span><span class="pl">: </span><span class="nm">34.0</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">27</span><span class="pl">            </span><span class="st">"fare_is_peak"</span><span class="pl">: </span><span class="kw">false</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">28</span><span class="pl">            </span><span class="st">"fare_product"</span><span class="pl">: </span><span class="st">"Pay-As-You-Go"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">29</span><span class="pl">            </span><span class="st">"trip_id"</span><span class="pl">: </span><span class="st">"3240bdb2-f42a-4813-ae48-cb4ab51b0365"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">30</span><span class="pl">            </span><span class="st">"polyline"</span><span class="pl">: []</span></div>
+<div class="line"><span class="ln">31</span><span class="pl">          }</span></div>
+<div class="line"><span class="ln">32</span><span class="pl">        ]</span></div>
+<div class="line"><span class="ln">33</span><span class="pl">      }</span></div>
+<div class="line"><span class="ln">34</span><span class="pl">    ]</span></div>
+<div class="line"><span class="ln">35</span><span class="pl">  },</span></div>
+<div class="line"><span class="ln">36</span><span class="pl">  </span><span class="st">"meta"</span><span class="pl">: {</span></div>
+<div class="line"><span class="ln">37</span><span class="pl">    </span><span class="st">"count"</span><span class="pl">: </span><span class="nm">1</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">38</span><span class="pl">    </span><span class="st">"from"</span><span class="pl">: </span><span class="st">"rosebank"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">39</span><span class="pl">    </span><span class="st">"to"</span><span class="pl">: </span><span class="st">"marlboro"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">40</span><span class="pl">    </span><span class="st">"next_cursor"</span><span class="pl">: </span><span class="st">"MjAyNi0wNS0yOFQwNDoxMzozNlo"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">41</span><span class="pl">    </span><span class="st">"as_of"</span><span class="pl">: </span><span class="st">"2026-05-27T15:47:16Z"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">42</span><span class="pl">    </span><span class="st">"includes"</span><span class="pl">: [</span><span class="st">"polylines"</span><span class="pl">],</span></div>
+<div class="line"><span class="ln">43</span><span class="pl">    </span><span class="st">"cache"</span><span class="pl">: {</span></div>
+<div class="line"><span class="ln">44</span><span class="pl">      </span><span class="st">"status"</span><span class="pl">: </span><span class="st">"fresh"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">45</span><span class="pl">      </span><span class="st">"cached_at"</span><span class="pl">: </span><span class="st">"2026-05-27T15:47:09Z"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">46</span><span class="pl">      </span><span class="st">"age_seconds"</span><span class="pl">: </span><span class="nm">7</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">47</span><span class="pl">      </span><span class="st">"ttl_seconds"</span><span class="pl">: </span><span class="nm">15</span></div>
+<div class="line"><span class="ln">48</span><span class="pl">    }</span></div>
+<div class="line"><span class="ln">49</span><span class="pl">  }</span></div>
+<div class="line"><span class="ln">50</span><span class="pl">}</span></div></pre></div>
+        </div>
+
+        <div class="callout amber">
+          <div class="callout-label">⚠️ Pagination Cursor Constraint</div>
+          Mobile clients must treat <code>next_cursor</code> as a sealed, opaque token. You should <strong>never</strong> attempt to decode or manipulate it. Simply capture the string and pass it back into the <code>?after=</code> URL parameter to fetch the next page.
+        </div>
+
+        <div class="pag">
+          <button class="pb" onclick="nav(-1)">&larr; GET /v1/stations</button>
+          <button class="pb pri" onclick="nav(1)">Caching &amp; ETags &rarr;</button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════ CACHING TELEMETRY ══════════════════════ -->
+      <div class="sec" id="sec-caching">
+        <div class="sec-eyebrow">Performance Architecture</div>
+        <div class="sec-h">Caching &amp; ETags</div>
+        <div class="sec-tag">How downstreams track freshness and validate ETags</div>
+
+        <p>The <code>meta.cache</code> block is the single source of truth regarding the freshness of the payload. Mobile clients use this block to adjust their interface and avoid serving stale schedules without informing the user.</p>
+
+        <h3>Cache Telemetry Block</h3>
+        <div class="cw">
+          <div class="ch"><span class="cl">json</span><span class="cf">The meta.cache envelope schema</span></div>
+          <div class="cb"><pre>  "cache": {
+    "status":      "fresh" | "stale" | "live_pagination",
+    "cached_at":   "ISO 8601 UTC timestamp",
+    "age_seconds": Integer (seconds elapsed since caching),
+    "ttl_seconds": Integer (allocated maximum freshness period)
+  }</pre></div>
+        </div>
+
+        <table>
+          <thead>
+          <tr>
+            <th>Attribute</th>
+            <th>Type</th>
+            <th>Purpose / Behavior</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td class="param-name">status</td>
+            <td><span class="param-type">String</span></td>
+            <td>
+              <code>"fresh"</code>: Within TTL. Data is fully validated.<br>
+              <code>"stale"</code>: Past TTL. Upstream Gautrain is currently down. Served as a safe fallback.<br>
+              <code>"live_pagination"</code>: Served dynamically bypassing the cache for paginated requests (Page 2+). Ensures absolute chronological continuity during infinite scroll without hitting stale cache walls.
+            </td>
+          </tr>
+          <tr>
+            <td class="param-name">cached_at</td>
+            <td><span class="param-type">String</span></td>
+            <td>When this data record was originally compiled and stored.</td>
+          </tr>
+          <tr>
+            <td class="param-name">age_seconds</td>
+            <td><span class="param-type">Integer</span></td>
+            <td>Elapsed seconds calculated on the server at request time. (Will be <code>0</code> for live_pagination requests).</td>
+          </tr>
+          </tbody>
+        </table>
+
+        <h3>Conditional GETs (ETags)</h3>
+        <p>TrainTimesAPI supports <strong>Conditional HTTP Requests</strong> via SHA-256 ETags. This saves massive amounts of mobile bandwidth.</p>
+        <ul>
+          <li>The server always includes an <code>ETag</code> header in its response.</li>
+          <li>Mobile clients should cache this tag and append it to subsequent requests via the <code>If-None-Match</code> header.</li>
+          <li>If the timetable hasn't changed, the server instantly halts and responds with an empty <span class="status-code warn">304 Not Modified</span> body.</li>
+        </ul>
+
+        <div class="pag">
+          <button class="pb" onclick="nav(-1)">&larr; GET /v1/journeys</button>
+          <button class="pb pri" onclick="nav(1)">Rate Limiting &rarr;</button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════ RATE LIMITING ══════════════════════ -->
+      <div class="sec" id="sec-limits">
+        <div class="sec-eyebrow">Performance Architecture</div>
+        <div class="sec-h">Rate Limiting</div>
+        <div class="sec-tag">Token-bucket quota enforcement</div>
+
+        <p>To prevent API abuse and backend cascading failures, TrainTimesAPI implements a strict sliding-window Token Bucket rate limiter tied to your <code>X-Api-Key</code>.</p>
+
+        <p><strong>Current Quota:</strong> 60 requests per rolling 60-second window.</p>
+
+        <h3>Standard Rate Limit Headers</h3>
+        <p>Every response (success or error) contains tracking headers so your client can preemptively throttle network tasks before hitting the limit:</p>
+
+        <table>
+          <thead>
+          <tr>
+            <th>Header</th>
+            <th>Example Value</th>
+            <th>Meaning</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td class="param-name">X-RateLimit-Limit</td>
+            <td><code>60</code></td>
+            <td>The maximum number of requests your key is allowed within the rolling time window.</td>
+          </tr>
+          <tr>
+            <td class="param-name">X-RateLimit-Remaining</td>
+            <td><code>59</code></td>
+            <td>How many tokens remain in your bucket right now.</td>
+          </tr>
+          <tr>
+            <td class="param-name">X-RateLimit-Reset</td>
+            <td><code>24</code></td>
+            <td>Seconds until your bucket is completely refilled to the maximum limit.</td>
+          </tr>
+          </tbody>
+        </table>
+
+        <h3>Exceeding the Limit</h3>
+        <p>If you exhaust your tokens, the API instantly rejects the call with an <span class="status-code err">HTTP 429 Too Many Requests</span> problem document. It will also append a standard <code>Retry-After</code> header telling the client exactly how many seconds to pause before trying again.</p>
+
+        <div class="pag">
+          <button class="pb" onclick="nav(-1)">&larr; Caching &amp; ETags</button>
+          <button class="pb pri" onclick="nav(1)">Errors (RFC 7807) &rarr;</button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════ ERRORS & CODES ══════════════════════ -->
+      <div class="sec" id="sec-errors">
+        <div class="sec-eyebrow">Failure Modes</div>
+        <div class="sec-h">Errors &amp; Codes Reference</div>
+        <div class="sec-tag">Structured API errors adhering to RFC 7807 Problem Details</div>
+
+        <p>TrainTimesAPI uses semantic, consistent HTTP status codes paired with detailed JSON objects that strictly adhere to the <strong>IETF RFC 7807 Problem Details for HTTP APIs</strong> schema. They are served with the <code>application/problem+json</code> content type.</p>
+
+        <h3>Error Structure Schema</h3>
+        <div class="cw">
+          <div class="ch"><span class="cl">json</span><span class="cf">Typical RFC 7807 Error Envelope</span><button class="cp" onclick="copyCode('errors-json',this)">Copy</button></div>
+          <div class="cb"><pre id="pre-errors-json"><div class="line"><span class="ln">1</span><span class="pl">{</span></div>
+<div class="line"><span class="ln">2</span><span class="pl">  </span><span class="st">"type"</span><span class="pl">: </span><span class="st">"https://traintimes.api/errors/same_station"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">3</span><span class="pl">  </span><span class="st">"title"</span><span class="pl">: </span><span class="st">"Same station"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">4</span><span class="pl">  </span><span class="st">"status"</span><span class="pl">: </span><span class="nm">400</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">5</span><span class="pl">  </span><span class="st">"detail"</span><span class="pl">: </span><span class="st">"Origin and destination must be different stations"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">6</span><span class="pl">  </span><span class="st">"instance"</span><span class="pl">: </span><span class="st">"/v1/errors/89b27-ef65-1ab2-cd89"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">7</span><span class="pl">  </span><span class="st">"from"</span><span class="pl">: </span><span class="st">"rosebank"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">8</span><span class="pl">  </span><span class="st">"to"</span><span class="pl">: </span><span class="st">"rosebank"</span></div>
+<div class="line"><span class="ln">9</span><span class="pl">}</span></div></pre></div>
+        </div>
+
+        <h3>Standard Error Codes</h3>
+        <table>
+          <thead>
+          <tr>
+            <th style="width:25%">Code Type (Suffix)</th>
+            <th style="width:12%">HTTP Status</th>
+            <th>Triggers &amp; Context</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td class="param-name">missing_parameter</td>
+            <td class="status-code err">400</td>
+            <td>User omitted <code>from</code> or <code>to</code> parameters.</td>
+          </tr>
+          <tr>
+            <td class="param-name">unknown_station</td>
+            <td class="status-code err">400</td>
+            <td>The slug supplied is unrecognised. Details returns the list of allowed valid station slugs.</td>
+          </tr>
+          <tr>
+            <td class="param-name">invalid_cursor</td>
+            <td class="status-code err">400</td>
+            <td>The supplied <code>after</code> parameter failed to decode as a valid URL-safe Base64 token.</td>
+          </tr>
+          <tr>
+            <td class="param-name">unauthorized</td>
+            <td class="status-code err">401</td>
+            <td>Incorrect or absent <code>X-Api-Key</code> request header.</td>
+          </tr>
+          <tr>
+            <td class="param-name">too_many_requests</td>
+            <td class="status-code err">429</td>
+            <td>Rate limit token bucket exhausted. See <code>Retry-After</code> header.</td>
+          </tr>
+          <tr>
+            <td class="param-name">upstream_unavailable</td>
+            <td class="status-code err">502</td>
+            <td>Upstream Gautrain service timed out or failed, and our local in-memory CacheStore possesses no stale records to fall back on.</td>
+          </tr>
+          </tbody>
+        </table>
+
+        <div class="pag">
+          <button class="pb" onclick="nav(-1)">&larr; Rate Limiting</button>
+          <button class="pb pri" onclick="nav(1)">iOS &amp; Android Guide &rarr;</button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════ CLIENT IMPLEMENTATION ══════════════════════ -->
+      <div class="sec" id="sec-clients">
+        <div class="sec-eyebrow">Developer Guide</div>
+        <div class="sec-h">Mobile Client Implementation</div>
+        <div class="sec-tag">Handling ETags, Rate Limits, Pagination, and Errors on iOS &amp; Android</div>
+
+        <p>The robust features we've documented—ETags, Rate Limits, Pagination, and RFC 7807 Problem Details—are only useful if the mobile clients are configured to honor them. Fortunately, both Apple's <code>URLSession</code> and Android's <code>OkHttp</code> handle the heavy lifting natively if properly configured.</p>
+
+        <h3>Apple iOS (Swift / URLSession)</h3>
+
+        <div class="cw">
+          <div class="ch"><span class="cl">swift</span><span class="cf">Networking configuration and Pagination</span><button class="cp" onclick="copyCode('swift-guide',this)">Copy</button></div>
+          <div class="cb"><pre id="pre-swift-guide"><div class="line"><span class="ln">1</span><span class="cm">// 1. Configure URLSession to natively honor ETags and Cache-Control headers</span></div>
+<div class="line"><span class="ln">2</span><span class="kw">let</span> <span class="pl">config = </span><span class="ty">URLSessionConfiguration</span><span class="pl">.default</span></div>
+<div class="line"><span class="ln">3</span><span class="pl">config.requestCachePolicy = .useProtocolCachePolicy </span><span class="cm">// Automatically handles 304 Not Modified!</span></div>
+<div class="line"><span class="ln">4</span><span class="kw">let</span> <span class="pl">session = </span><span class="ty">URLSession</span><span class="pl">(configuration: config)</span></div>
+<div class="line"><span class="ln">5</span><span class="pl"></span></div>
+<div class="line"><span class="ln">6</span><span class="cm">// 2. Checking for Rate Limits in the response</span></div>
+<div class="line"><span class="ln">7</span><span class="kw">if let</span> <span class="pl">httpResponse = response </span><span class="kw">as?</span> <span class="ty">HTTPURLResponse</span> <span class="pl">{</span></div>
+<div class="line"><span class="ln">8</span><span class="pl">    </span><span class="kw">if</span> <span class="pl">httpResponse.statusCode == </span><span class="nm">429</span> <span class="pl">{</span></div>
+<div class="line"><span class="ln">9</span><span class="pl">        </span><span class="kw">let</span> <span class="pl">retryAfter = httpResponse.value(forHTTPHeaderField: </span><span class="st">"Retry-After"</span><span class="pl">)</span></div>
+<div class="line"><span class="ln">10</span><span class="pl">        </span><span class="ty">print</span><span class="pl">(</span><span class="st">"Rate limited! Pause requests for \(retryAfter ?? "60") seconds."</span><span class="pl">)</span></div>
+<div class="line"><span class="ln">11</span><span class="pl">    }</span></div>
+<div class="line"><span class="ln">12</span><span class="pl">}</span></div>
+<div class="line"><span class="ln">13</span><span class="pl"></span></div>
+<div class="line"><span class="ln">14</span><span class="cm">// 3. Infinite Scroll Pagination</span></div>
+<div class="line"><span class="ln">15</span><span class="cm">// The API bypasses cache entirely when given a cursor to guarantee perfect continuity.</span></div>
+<div class="line"><span class="ln">16</span><span class="kw">var</span> <span class="pl">urlString = </span><span class="st">"https://your-server.com/v1/journeys?from=rosebank&amp;to=marlboro"</span></div>
+<div class="line"><span class="ln">17</span><span class="kw">if let</span> <span class="pl">cursor = currentResponse.meta.next_cursor {</span></div>
+<div class="line"><span class="ln">18</span><span class="pl">    urlString += </span><span class="st">"&amp;after=\(cursor)"</span> <span class="cm">// Pass the opaque token exactly as-is</span></div>
+<div class="line"><span class="ln">19</span><span class="pl">}</span></div>
+<div class="line"><span class="ln">20</span><span class="pl"></span></div>
+<div class="line"><span class="ln">21</span><span class="cm">// 4. RFC 7807 Error Struct for Decodable</span></div>
+<div class="line"><span class="ln">22</span><span class="kw">struct</span> <span class="ty">ProblemDetail</span><span class="pl">: </span><span class="ty">Decodable</span> <span class="pl">{</span></div>
+<div class="line"><span class="ln">23</span><span class="pl">    </span><span class="kw">let</span> <span class="pl">type: </span><span class="ty">String</span></div>
+<div class="line"><span class="ln">24</span><span class="pl">    </span><span class="kw">let</span> <span class="pl">title: </span><span class="ty">String</span></div>
+<div class="line"><span class="ln">25</span><span class="pl">    </span><span class="kw">let</span> <span class="pl">status: </span><span class="ty">Int</span></div>
+<div class="line"><span class="ln">26</span><span class="pl">    </span><span class="kw">let</span> <span class="pl">detail: </span><span class="ty">String</span></div>
+<div class="line"><span class="ln">27</span><span class="pl">    </span><span class="kw">let</span> <span class="pl">instance: </span><span class="ty">String</span></div>
+<div class="line"><span class="ln">28</span><span class="pl">}</span></div></pre></div>
+        </div>
+
+        <h3>Android (Kotlin / OkHttp)</h3>
+
+        <div class="cw">
+          <div class="ch"><span class="cl">kotlin</span><span class="cf">OkHttp Configuration and Interceptors</span><button class="cp" onclick="copyCode('kotlin-guide',this)">Copy</button></div>
+          <div class="cb"><pre id="pre-kotlin-guide"><div class="line"><span class="ln">1</span><span class="cm">// 1. Configure OkHttp Cache to handle ETags and 304s natively</span></div>
+<div class="line"><span class="ln">2</span><span class="kw">val</span> <span class="pl">cacheSize = (</span><span class="nm">5</span> <span class="pl">* </span><span class="nm">1024</span> <span class="pl">* </span><span class="nm">1024</span><span class="pl">).toLong() </span><span class="cm">// 5 MB</span></div>
+<div class="line"><span class="ln">3</span><span class="kw">val</span> <span class="pl">myCache = </span><span class="ty">Cache</span><span class="pl">(context.cacheDir, cacheSize)</span></div>
+<div class="line"><span class="ln">4</span><span class="pl"></span></div>
+<div class="line"><span class="ln">5</span><span class="kw">val</span> <span class="pl">client = </span><span class="ty">OkHttpClient.Builder</span><span class="pl">()</span></div>
+<div class="line"><span class="ln">6</span><span class="pl">    .cache(myCache) </span><span class="cm">// OkHttp will now send If-None-Match automatically!</span></div>
+<div class="line"><span class="ln">7</span><span class="pl">    .addInterceptor { chain -></span></div>
+<div class="line"><span class="ln">8</span><span class="pl">        </span><span class="cm">// 2. Interceptor for Rate Limiting</span></div>
+<div class="line"><span class="ln">9</span><span class="pl">        </span><span class="kw">val</span> <span class="pl">response = chain.proceed(chain.request())</span></div>
+<div class="line"><span class="ln">10</span><span class="pl">        </span><span class="kw">if</span> <span class="pl">(response.code == </span><span class="nm">429</span><span class="pl">) {</span></div>
+<div class="line"><span class="ln">11</span><span class="pl">            </span><span class="kw">val</span> <span class="pl">retryAfter = response.header(</span><span class="st">"Retry-After"</span><span class="pl">)</span></div>
+<div class="line"><span class="ln">12</span><span class="pl">            </span><span class="cm">// Post an event to the UI to pause requests...</span></div>
+<div class="line"><span class="ln">13</span><span class="pl">        }</span></div>
+<div class="line"><span class="ln">14</span><span class="pl">        response</span></div>
+<div class="line"><span class="ln">15</span><span class="pl">    }</span></div>
+<div class="line"><span class="ln">16</span><span class="pl">    .build()</span></div>
+<div class="line"><span class="ln">17</span><span class="pl"></span></div>
+<div class="line"><span class="ln">18</span><span class="cm">// 3. Infinite Scroll Pagination</span></div>
+<div class="line"><span class="ln">19</span><span class="kw">val</span> <span class="pl">urlBuilder = HttpUrl.parse(</span><span class="st">"https://your-server.com/v1/journeys"</span><span class="pl">)!!.newBuilder()</span></div>
+<div class="line"><span class="ln">20</span><span class="pl">    .addQueryParameter(</span><span class="st">"from"</span><span class="pl">, </span><span class="st">"rosebank"</span><span class="pl">)</span></div>
+<div class="line"><span class="ln">21</span><span class="pl">    .addQueryParameter(</span><span class="st">"to"</span><span class="pl">, </span><span class="st">"marlboro"</span><span class="pl">)</span></div>
+<div class="line"><span class="ln">22</span><span class="pl"></span></div>
+<div class="line"><span class="ln">23</span><span class="cm">// Append the opaque token directly — no date parsing required!</span></div>
+<div class="line"><span class="ln">24</span><span class="pl">currentResponse.meta.next_cursor?.let { cursor -></span></div>
+<div class="line"><span class="ln">25</span><span class="pl">    urlBuilder.addQueryParameter(</span><span class="st">"after"</span><span class="pl">, cursor) </span></div>
+<div class="line"><span class="ln">26</span><span class="pl">}</span></div>
+<div class="line"><span class="ln">27</span><span class="pl"></span></div>
+<div class="line"><span class="ln">28</span><span class="cm">// 4. RFC 7807 Error Data Class (Moshi/Gson)</span></div>
+<div class="line"><span class="ln">29</span><span class="kw">data class</span> <span class="ty">ProblemDetail</span><span class="pl">(</span></div>
+<div class="line"><span class="ln">30</span><span class="pl">    </span><span class="kw">val</span> <span class="pl">type: </span><span class="ty">String</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">31</span><span class="pl">    </span><span class="kw">val</span> <span class="pl">title: </span><span class="ty">String</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">32</span><span class="pl">    </span><span class="kw">val</span> <span class="pl">status: </span><span class="ty">Int</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">33</span><span class="pl">    </span><span class="kw">val</span> <span class="pl">detail: </span><span class="ty">String</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">34</span><span class="pl">    </span><span class="kw">val</span> <span class="pl">instance: </span><span class="ty">String</span></div>
+<div class="line"><span class="ln">35</span><span class="pl">)</span></div></pre></div>
+        </div>
+
+        <div class="pag">
+          <button class="pb" onclick="nav(-1)">&larr; Errors (RFC 7807)</button>
+          <button class="pb done">Document Complete</button>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</div>
+
+<script>
+  const SECS=["overview","health","stations","journeys","caching","limits","errors","clients"];
+  let cur=0;
+  const total=SECS.length;
+
+  function show(i){
+    if(i<0||i>=total)return;
+    document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+    document.getElementById('sec-'+SECS[i]).classList.add('active');
+    document.querySelectorAll('.nav-link').forEach(l=>l.classList.toggle('active',l.dataset.s===SECS[i]));
+
+    // Update Breadcrumbs
+    let cleanName = SECS[i].charAt(0).toUpperCase() + SECS[i].slice(1);
+    if(SECS[i] === 'health') cleanName = 'GET /health';
+    if(SECS[i] === 'stations') cleanName = 'GET /v1/stations';
+    if(SECS[i] === 'journeys') cleanName = 'GET /v1/journeys';
+    if(SECS[i] === 'caching') cleanName = 'Caching & ETags';
+    if(SECS[i] === 'limits') cleanName = 'Rate Limiting';
+    if(SECS[i] === 'errors') cleanName = 'Errors (RFC 7807)';
+    if(SECS[i] === 'clients') cleanName = 'iOS & Android Guide';
+    document.getElementById('bc-sec').textContent = cleanName;
+
+    document.getElementById('cnt').textContent=(i+1)+' / '+total;
+    cur=i;window.scrollTo(0,0);
+  }
+  function nav(d){show(cur+d);}
+
+  document.querySelectorAll('.nav-link').forEach(l=>{
+    l.addEventListener('click',e=>{
+      e.preventDefault();
+      const i=SECS.indexOf(l.dataset.s);
+      if(i!==-1)show(i);
+    });
+  });
+
+  function copyCode(id,btn){
+    const pre=document.getElementById('pre-'+id);if(!pre)return;
+    const lines=pre.querySelectorAll('.line');
+    const text=Array.from(lines).map(l=>{
+      const spans=l.querySelectorAll('span:not(.ln)');
+      return Array.from(spans).map(s=>s.innerText).join('');
+    }).join('\n');
+
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'absolute';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+      btn.textContent='Copied';
+      btn.classList.add('ok');
+      setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('ok');},2000);
+    } catch (err) {
+      console.error('Copy failed', err);
+    }
+    document.body.removeChild(ta);
+  }
+  show(0);
+</script>
+</body>
+</html>

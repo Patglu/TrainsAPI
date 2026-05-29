@@ -1,0 +1,25 @@
+# frozen_string_literal: true
+source "https://rubygems.org"
+
+ruby "~> 3.2"
+
+# Web framework – lightweight, ideal for APIs
+gem "sinatra", "~> 3.1"
+gem "sinatra-contrib", "~> 3.1"
+
+# HTTP client for talking to Gautrain
+gem "faraday", "~> 2.7"
+
+# Production-grade web server
+gem "puma", "~> 6.4"
+
+# Load .env environment variables
+gem "dotenv", "~> 2.8"
+
+# Cross-Origin Resource Sharing (mobile apps will need this)
+gem "rack-cors", "~> 2.0"
+
+group :development do
+  # Auto‑reloads the server when files change (optional, but handy)
+  gem "rerun", "~> 0.14"
+end
