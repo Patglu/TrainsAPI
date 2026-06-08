@@ -13,11 +13,11 @@ module Helpers
     def send_error(code, message, details = {}, status = 400)
       req_id = Thread.current[:request_id] || "unknown"
       payload = {
-        type:     "https://traintimes.api/errors/<span class=\"pl\">#{code}</span>",
+        type:     "https://traintimes.api/errors/#{code}",
         title:    code.to_s.gsub("_", " ").capitalize,
         status:   status,
         detail:   message,
-        instance: "/v1/errors/<span class=\"pl\">#{req_id}</span>"
+        instance: "/v1/errors/#{req_id}"
       }.merge(details)
 
       halt status, { "Content-Type" => "application/problem+json" },

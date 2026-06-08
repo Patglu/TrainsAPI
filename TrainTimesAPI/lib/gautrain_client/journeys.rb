@@ -95,10 +95,16 @@ module GautrainClient
       }
 
       # earliestDeparture is the pagination cursor — present on /extend calls only.
-      params["earliestDeparture"] = after_timestamp if after_timestamp
+      # Gautrain API operates on local South Africa Standard Time (SAST, UTC+2).
+      # We must convert the UTC timestamp into SAST (+02:00) before sending.
+      if after_timestamp
+        params["earliestDeparture"] = Time.parse(after_timestamp).getlocal("+02:00").iso8601
+      end
 
       # earliestArrival allows querying from a specific future time.
-      params["earliestArrival"] = requested_time if requested_time
+      if requested_time
+        params["earliestArrival"] = Time.parse(requested_time).getlocal("+02:00").iso8601
+      end
 
       params
     end

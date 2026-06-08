@@ -73,7 +73,8 @@ get "/v1/journeys" do
   journey_hashes = itineraries.map(&:to_h)
 
   # Evaluate ETag header validation on the serialized journey content payload
-  etag Digest::SHA256.hexdigest(journey_hashes.to_json)
+  # Bypassed when given a cursor to guarantee perfect continuity.
+  etag Digest::SHA256.hexdigest(journey_hashes.to_json) unless after_param
 
   # Calculate the in-memory age of the returned cache record
   age_seconds = (Time.now - result.cached_at).round

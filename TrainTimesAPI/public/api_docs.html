@@ -387,6 +387,11 @@ Development URL: http://localhost:9292</pre></div>
           Mobile clients must treat <code>next_cursor</code> as a sealed, opaque token. You should <strong>never</strong> attempt to decode or manipulate it. Simply capture the string and pass it back into the <code>?after=</code> URL parameter to fetch the next page.
         </div>
 
+        <div class="callout amber">
+          <div class="callout-label">🕒 Timezone Alignment</div>
+          The upstream Gautrain API operates strictly on South Africa Standard Time (SAST, UTC+2) and disregards timezone designators (such as <code>Z</code>). To ensure correct pagination sequence and chronological continuity, all UTC timestamp inputs (such as <code>after</code> pagination cursors) are translated into SAST (+02:00) before making the upstream query.
+        </div>
+
         <div class="pag">
           <button class="pb" onclick="nav(-1)">&larr; GET /v1/stations</button>
           <button class="pb pri" onclick="nav(1)">Caching &amp; ETags &rarr;</button>
