@@ -313,7 +313,17 @@ Development URL: http://localhost:9292</pre></div>
           <tr>
             <td class="param-name">include</td>
             <td><span class="badge opt">Optional</span></td>
-            <td>Enables extra payload details. Set to <code>polylines</code> to populate coordinates inside itinerary legs.</td>
+            <td>Enables extra payload details. Comma-separated list. Set to <code>polylines</code> to populate coordinates inside itinerary legs, and/or <code>intermediate_stations</code> to populate intermediate stops inside journeys.</td>
+          </tr>
+          <tr>
+            <td class="param-name">include_intermediate</td>
+            <td><span class="badge opt">Optional</span></td>
+            <td>Enables intermediate stops if set to <code>true</code>. Equivalent to including <code>intermediate_stations</code> in <code>include</code>.</td>
+          </tr>
+          <tr>
+            <td class="param-name">requested_time</td>
+            <td><span class="badge opt">Optional</span></td>
+            <td>ISO 8601 timestamp (e.g. <code>2026-06-12T12:00:00+02:00</code>) to evaluate journeys starting from a specific day/time. Defaults to current server time.</td>
           </tr>
           </tbody>
         </table>
@@ -341,45 +351,56 @@ Development URL: http://localhost:9292</pre></div>
 <div class="line"><span class="ln">9</span><span class="pl">        </span><span class="st">"distance_metres"</span><span class="pl">: </span><span class="nm">10891</span><span class="pl">,</span></div>
 <div class="line"><span class="ln">10</span><span class="pl">        </span><span class="st">"total_fare_zar"</span><span class="pl">: </span><span class="nm">34.0</span><span class="pl">,</span></div>
 <div class="line"><span class="ln">11</span><span class="pl">        </span><span class="st">"parking_cost_zar"</span><span class="pl">: </span><span class="nm">25.0</span><span class="pl">,</span></div>
-<div class="line"><span class="ln">12</span><span class="pl">        </span><span class="st">"legs"</span><span class="pl">: [</span></div>
+<div class="line"><span class="ln">12</span><span class="pl">        </span><span class="st">"intermediate_stations"</span><span class="pl">: [</span></div>
 <div class="line"><span class="ln">13</span><span class="pl">          {</span></div>
-<div class="line"><span class="ln">14</span><span class="pl">            </span><span class="st">"id"</span><span class="pl">: </span><span class="st">"6a65e54d-b8b9-4928-b6c7-df182f080635"</span><span class="pl">,</span></div>
-<div class="line"><span class="ln">15</span><span class="pl">            </span><span class="st">"mode"</span><span class="pl">: </span><span class="st">"rail"</span><span class="pl">,</span></div>
-<div class="line"><span class="ln">16</span><span class="pl">            </span><span class="st">"line_name"</span><span class="pl">: </span><span class="st">"North - South Line"</span><span class="pl">,</span></div>
-<div class="line"><span class="ln">17</span><span class="pl">            </span><span class="st">"line_colour"</span><span class="pl">: </span><span class="st">"#b12f23"</span><span class="pl">,</span></div>
-<div class="line"><span class="ln">18</span><span class="pl">            </span><span class="st">"departure_stop"</span><span class="pl">: </span><span class="st">"rosebank"</span><span class="pl">,</span></div>
-<div class="line"><span class="ln">19</span><span class="pl">            </span><span class="st">"arrival_stop"</span><span class="pl">: </span><span class="st">"marlboro"</span><span class="pl">,</span></div>
-<div class="line"><span class="ln">20</span><span class="pl">            </span><span class="st">"departure_time"</span><span class="pl">: </span><span class="st">"2026-05-28T03:33:36Z"</span><span class="pl">,</span></div>
-<div class="line"><span class="ln">21</span><span class="pl">            </span><span class="st">"arrival_time"</span><span class="pl">: </span><span class="st">"2026-05-28T03:41:21Z"</span><span class="pl">,</span></div>
-<div class="line"><span class="ln">22</span><span class="pl">            </span><span class="st">"duration_seconds"</span><span class="pl">: </span><span class="nm">503</span><span class="pl">,</span></div>
-<div class="line"><span class="ln">23</span><span class="pl">            </span><span class="st">"distance_metres"</span><span class="pl">: </span><span class="nm">10891</span><span class="pl">,</span></div>
-<div class="line"><span class="ln">24</span><span class="pl">            </span><span class="st">"headsign"</span><span class="pl">: </span><span class="st">"Marlboro"</span><span class="pl">,</span></div>
-<div class="line"><span class="ln">25</span><span class="pl">            </span><span class="st">"carriages"</span><span class="pl">: </span><span class="nm">4</span><span class="pl">,</span></div>
-<div class="line"><span class="ln">26</span><span class="pl">            </span><span class="st">"fare_amount_zar"</span><span class="pl">: </span><span class="nm">34.0</span><span class="pl">,</span></div>
-<div class="line"><span class="ln">27</span><span class="pl">            </span><span class="st">"fare_is_peak"</span><span class="pl">: </span><span class="kw">false</span><span class="pl">,</span></div>
-<div class="line"><span class="ln">28</span><span class="pl">            </span><span class="st">"fare_product"</span><span class="pl">: </span><span class="st">"Pay-As-You-Go"</span><span class="pl">,</span></div>
-<div class="line"><span class="ln">29</span><span class="pl">            </span><span class="st">"trip_id"</span><span class="pl">: </span><span class="st">"3240bdb2-f42a-4813-ae48-cb4ab51b0365"</span><span class="pl">,</span></div>
-<div class="line"><span class="ln">30</span><span class="pl">            </span><span class="st">"polyline"</span><span class="pl">: []</span></div>
-<div class="line"><span class="ln">31</span><span class="pl">          }</span></div>
-<div class="line"><span class="ln">32</span><span class="pl">        ]</span></div>
-<div class="line"><span class="ln">33</span><span class="pl">      }</span></div>
-<div class="line"><span class="ln">34</span><span class="pl">    ]</span></div>
-<div class="line"><span class="ln">35</span><span class="pl">  },</span></div>
-<div class="line"><span class="ln">36</span><span class="pl">  </span><span class="st">"meta"</span><span class="pl">: {</span></div>
-<div class="line"><span class="ln">37</span><span class="pl">    </span><span class="st">"count"</span><span class="pl">: </span><span class="nm">1</span><span class="pl">,</span></div>
-<div class="line"><span class="ln">38</span><span class="pl">    </span><span class="st">"from"</span><span class="pl">: </span><span class="st">"rosebank"</span><span class="pl">,</span></div>
-<div class="line"><span class="ln">39</span><span class="pl">    </span><span class="st">"to"</span><span class="pl">: </span><span class="st">"marlboro"</span><span class="pl">,</span></div>
-<div class="line"><span class="ln">40</span><span class="pl">    </span><span class="st">"next_cursor"</span><span class="pl">: </span><span class="st">"MjAyNi0wNS0yOFQwNDoxMzozNlo"</span><span class="pl">,</span></div>
-<div class="line"><span class="ln">41</span><span class="pl">    </span><span class="st">"as_of"</span><span class="pl">: </span><span class="st">"2026-05-27T15:47:16Z"</span><span class="pl">,</span></div>
-<div class="line"><span class="ln">42</span><span class="pl">    </span><span class="st">"includes"</span><span class="pl">: [</span><span class="st">"polylines"</span><span class="pl">],</span></div>
-<div class="line"><span class="ln">43</span><span class="pl">    </span><span class="st">"cache"</span><span class="pl">: {</span></div>
-<div class="line"><span class="ln">44</span><span class="pl">      </span><span class="st">"status"</span><span class="pl">: </span><span class="st">"fresh"</span><span class="pl">,</span></div>
-<div class="line"><span class="ln">45</span><span class="pl">      </span><span class="st">"cached_at"</span><span class="pl">: </span><span class="st">"2026-05-27T15:47:09Z"</span><span class="pl">,</span></div>
-<div class="line"><span class="ln">46</span><span class="pl">      </span><span class="st">"age_seconds"</span><span class="pl">: </span><span class="nm">7</span><span class="pl">,</span></div>
-<div class="line"><span class="ln">47</span><span class="pl">      </span><span class="st">"ttl_seconds"</span><span class="pl">: </span><span class="nm">15</span></div>
-<div class="line"><span class="ln">48</span><span class="pl">    }</span></div>
-<div class="line"><span class="ln">49</span><span class="pl">  }</span></div>
-<div class="line"><span class="ln">50</span><span class="pl">}</span></div></pre></div>
+<div class="line"><span class="ln">14</span><span class="pl">            </span><span class="st">"id"</span><span class="pl">: </span><span class="st">"marlboro"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">15</span><span class="pl">            </span><span class="st">"name"</span><span class="pl">: </span><span class="st">"Marlboro"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">16</span><span class="pl">            </span><span class="st">"arrival_time"</span><span class="pl">: </span><span class="st">"2026-05-28T03:37:21Z"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">17</span><span class="pl">            </span><span class="st">"duration_seconds"</span><span class="pl">: </span><span class="nm">225</span></div>
+<div class="line"><span class="ln">18</span><span class="pl">          }</span></div>
+<div class="line"><span class="ln">19</span><span class="pl">        ],</span></div>
+<div class="line"><span class="ln">20</span><span class="pl">        </span><span class="st">"legs"</span><span class="pl">: [</span></div>
+<div class="line"><span class="ln">21</span><span class="pl">          {</span></div>
+<div class="line"><span class="ln">22</span><span class="pl">            </span><span class="st">"id"</span><span class="pl">: </span><span class="st">"6a65e54d-b8b9-4928-b6c7-df182f080635"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">23</span><span class="pl">            </span><span class="st">"mode"</span><span class="pl">: </span><span class="st">"rail"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">24</span><span class="pl">            </span><span class="st">"line_name"</span><span class="pl">: </span><span class="st">"North - South Line"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">25</span><span class="pl">            </span><span class="st">"line_colour"</span><span class="pl">: </span><span class="st">"#b12f23"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">26</span><span class="pl">            </span><span class="st">"departure_stop"</span><span class="pl">: </span><span class="st">"rosebank"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">27</span><span class="pl">            </span><span class="st">"arrival_stop"</span><span class="pl">: </span><span class="st">"marlboro"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">28</span><span class="pl">            </span><span class="st">"departure_time"</span><span class="pl">: </span><span class="st">"2026-05-28T03:33:36Z"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">29</span><span class="pl">            </span><span class="st">"arrival_time"</span><span class="pl">: </span><span class="st">"2026-05-28T03:41:21Z"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">30</span><span class="pl">            </span><span class="st">"duration_seconds"</span><span class="pl">: </span><span class="nm">503</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">31</span><span class="pl">            </span><span class="st">"distance_metres"</span><span class="pl">: </span><span class="nm">10891</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">32</span><span class="pl">            </span><span class="st">"headsign"</span><span class="pl">: </span><span class="st">"Marlboro"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">33</span><span class="pl">            </span><span class="st">"carriages"</span><span class="pl">: </span><span class="nm">4</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">34</span><span class="pl">            </span><span class="st">"fare_amount_zar"</span><span class="pl">: </span><span class="nm">34.0</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">35</span><span class="pl">            </span><span class="st">"fare_is_peak"</span><span class="pl">: </span><span class="kw">false</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">36</span><span class="pl">            </span><span class="st">"fare_product"</span><span class="pl">: </span><span class="st">"Pay-As-You-Go"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">37</span><span class="pl">            </span><span class="st">"trip_id"</span><span class="pl">: </span><span class="st">"3240bdb2-f42a-4813-ae48-cb4ab51b0365"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">38</span><span class="pl">            </span><span class="st">"polyline"</span><span class="pl">: []</span></div>
+<div class="line"><span class="ln">39</span><span class="pl">          }</span></div>
+<div class="line"><span class="ln">40</span><span class="pl">        ]</span></div>
+<div class="line"><span class="ln">41</span><span class="pl">      }</span></div>
+<div class="line"><span class="ln">42</span><span class="pl">    ]</span></div>
+<div class="line"><span class="ln">43</span><span class="pl">  },</span></div>
+<div class="line"><span class="ln">44</span><span class="pl">  </span><span class="st">"meta"</span><span class="pl">: {</span></div>
+<div class="line"><span class="ln">45</span><span class="pl">    </span><span class="st">"count"</span><span class="pl">: </span><span class="nm">1</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">46</span><span class="pl">    </span><span class="st">"from"</span><span class="pl">: </span><span class="st">"rosebank"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">47</span><span class="pl">    </span><span class="st">"to"</span><span class="pl">: </span><span class="st">"marlboro"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">48</span><span class="pl">    </span><span class="st">"next_cursor"</span><span class="pl">: </span><span class="st">"MjAyNi0wNS0yOFQwNDoxMzozNlo"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">49</span><span class="pl">    </span><span class="st">"as_of"</span><span class="pl">: </span><span class="st">"2026-05-27T15:47:16Z"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">50</span><span class="pl">    </span><span class="st">"includes"</span><span class="pl">: [</span><span class="st">"polylines"</span><span class="pl">, </span><span class="st">"intermediate_stations"</span><span class="pl">],</span></div>
+<div class="line"><span class="ln">51</span><span class="pl">    </span><span class="st">"transfer_required"</span><span class="pl">: </span><span class="kw">false</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">52</span><span class="pl">    </span><span class="st">"last_train_has_left"</span><span class="pl">: </span><span class="kw">false</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">53</span><span class="pl">    </span><span class="st">"last_call"</span><span class="pl">: </span><span class="kw">false</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">54</span><span class="pl">    </span><span class="st">"cache"</span><span class="pl">: {</span></div>
+<div class="line"><span class="ln">55</span><span class="pl">      </span><span class="st">"status"</span><span class="pl">: </span><span class="st">"fresh"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">56</span><span class="pl">      </span><span class="st">"cached_at"</span><span class="pl">: </span><span class="st">"2026-05-27T15:47:09Z"</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">57</span><span class="pl">      </span><span class="st">"age_seconds"</span><span class="pl">: </span><span class="nm">7</span><span class="pl">,</span></div>
+<div class="line"><span class="ln">58</span><span class="pl">      </span><span class="st">"ttl_seconds"</span><span class="pl">: </span><span class="nm">15</span></div>
+<div class="line"><span class="ln">59</span><span class="pl">    }</span></div>
+<div class="line"><span class="ln">60</span><span class="pl">  }</span></div>
+<div class="line"><span class="ln">61</span><span class="pl">}</span></div></pre></div>
         </div>
 
         <div class="callout amber">

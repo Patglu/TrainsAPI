@@ -33,6 +33,7 @@ module GautrainClient
       :fare_product,     # e.g. "Pay-As-You-Go"
       :trip_id,          # vehicle.tripId — kept for future real-time tracking
       :polyline,         # always an Array: [] by default, [[lat,lng],...] if requested
+      :waypoints,        # raw waypoints array from upstream
       keyword_init: true
     )
 
@@ -72,7 +73,8 @@ module GautrainClient
           fare_is_peak:     fare["description"] == "Peak",
           fare_product:     fare.dig("fareProduct", "name"),
           trip_id:          h.dig("vehicle", "tripId"),
-          polyline:         []
+          polyline:         [],
+          waypoints:        h["waypoints"]
         )
       end
 

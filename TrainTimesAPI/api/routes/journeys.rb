@@ -48,8 +48,11 @@ get "/v1/journeys" do
   end
 
   # All validation passed. Build the includes list and call the client.
-  includes        = params["include"].to_s.split(",").map(&:strip)
-  include_polylines = includes.include?("polylines")
+  includes             = params["include"].to_s.split(",").map(&:strip)
+  include_polylines    = includes.include?("polylines")
+  include_intermediate = params["include_intermediate"] == "true" || includes.include?("intermediate_stations")
+  requested_time       = params["requested_time"]&.strip
+  requested_time       = nil if requested_time&.empty?
 
   # First-page requests can be cached briefly, but cursor pagination must stay live.
   if after_param
@@ -64,13 +67,14 @@ get "/v1/journeys" do
     origin_slug:       from_slug,
     destination_slug:  to_slug,
     after_timestamp:   after_param,
+    requested_time:    requested_time,
     include_polylines: include_polylines
   )
 
   # Extract values from the wrapped cache payload
   journey_data   = result.value
   itineraries    = journey_data[:itineraries]
-  journey_hashes = itineraries.map(&:to_h)
+  journey_hashes = itineraries.map { |iti| iti.to_h(include_intermediate: include_intermediate) }
 
   # Evaluate ETag header validation on the serialized journey content payload
   # Bypassed when given a cursor to guarantee perfect continuity.
@@ -99,6 +103,40 @@ get "/v1/journeys" do
 
   # includes only appears in meta when the request actually used ?include=
   meta[:includes] = includes unless includes.empty?
+
+  # Check if the journey involves crossing rail lines (transfer required)
+  crosses_lines = itineraries.any? do |iti|
+    rail_legs = iti.legs.select { |leg| leg.mode == "rail" }
+    rail_legs.size > 1 && rail_legs.map(&:line_name).uniq.size > 1
+  end
+
+  meta[:transfer_required] = crosses_lines
+
+  # Calculate reference time and date in SAST timezone (UTC+2)
+  ref_time = requested_time ? Time.parse(requested_time) : @request_start
+  ref_date_sast = ref_time.getlocal("+02:00").to_date
+
+  if itineraries.any?
+    first_dep_date_sast = Time.parse(itineraries.first.departure_time).getlocal("+02:00").to_date
+    last_train_has_left = first_dep_date_sast > ref_date_sast
+
+    last_call = if first_dep_date_sast == ref_date_sast
+                  if itineraries.size == 1
+                    true
+                  else
+                    second_dep_date_sast = Time.parse(itineraries[1].departure_time).getlocal("+02:00").to_date
+                    second_dep_date_sast > ref_date_sast
+                  end
+                else
+                  false
+                end
+  else
+    last_train_has_left = true
+    last_call = false
+  end
+
+  meta[:last_train_has_left] = last_train_has_left
+  meta[:last_call]           = last_call
 
   send_success({ journeys: journey_hashes }, meta)
 end

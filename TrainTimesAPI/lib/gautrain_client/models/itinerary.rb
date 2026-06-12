@@ -52,10 +52,46 @@ module GautrainClient
         legs.sum(&:fare_amount_zar)
       end
 
+      # Collects and maps intermediate stations along the journey, including
+      # their travel duration from the departure station.
+      def intermediate_stations
+        combined_waypoints = []
+        legs.each_with_index do |leg, idx|
+          wps = leg.waypoints || []
+          if idx == 0
+            combined_waypoints.concat(wps)
+          else
+            combined_waypoints.concat(wps[1..] || [])
+          end
+        end
+
+        return [] if combined_waypoints.empty?
+
+        # Exclude the very first (origin) and very last (destination) stops
+        intermediate_wps = combined_waypoints[1...-1] || []
+
+        dep_time = Time.parse(departure_time)
+        intermediate_wps.map do |wp|
+          wp_arr_time_str = wp["arrivalTime"]
+          wp_arr_time = Time.parse(wp_arr_time_str).utc if wp_arr_time_str
+          duration = wp_arr_time ? (wp_arr_time - dep_time).to_i : 0
+          
+          stop_name = wp.dig("stop", "name")
+          station_slug = Station::NAME_TO_SLUG[stop_name]
+
+          {
+            id:               station_slug,
+            name:             stop_name,
+            arrival_time:     wp_arr_time ? wp_arr_time.iso8601 : nil,
+            duration_seconds: duration
+          }
+        end
+      end
+
       # Produces the JSON-ready hash for one journey.
       # legs.map(&:to_h) converts each Leg struct to a plain hash.
-      def to_h
-        {
+      def to_h(include_intermediate: false)
+        hash = {
           id:               id,
           departure_time:   departure_time,
           arrival_time:     arrival_time,
@@ -65,6 +101,10 @@ module GautrainClient
           parking_cost_zar: parking_cost_zar,
           legs:             legs.map(&:to_h)
         }
+        if include_intermediate
+          hash[:intermediate_stations] = intermediate_stations
+        end
+        hash
       end
     end
   end
