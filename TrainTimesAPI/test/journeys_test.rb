@@ -8,14 +8,36 @@ class JourneysTest < Minitest::Test
   end
 
   # Helper to construct a mock itinerary
-  def build_mock_itinerary(id, departure_time_utc)
+  def build_mock_itinerary(id, departure_time_utc, legs: [])
     GautrainClient::Models::Itinerary.new(
       id: id,
       departure_time: departure_time_utc,
       arrival_time: departure_time_utc, # simple mock
       duration_seconds: 1800,
-      legs: [],
+      legs: legs,
       parking_cost_zar: 25.0
+    )
+  end
+
+  def build_mock_leg(id, mode, line_name)
+    GautrainClient::Models::Leg.new(
+      id: id,
+      mode: mode,
+      line_name: line_name,
+      line_colour: "#000",
+      departure_stop: "stop_a",
+      arrival_stop: "stop_b",
+      departure_time: "2026-06-12T10:00:00Z",
+      arrival_time: "2026-06-12T10:10:00Z",
+      duration_seconds: 600,
+      distance_metres: 5000,
+      headsign: "headsign",
+      carriages: 4,
+      fare_amount_zar: 20.0,
+      fare_is_peak: false,
+      fare_product: "Pay-As-You-Go",
+      trip_id: "trip-1",
+      waypoints: []
     )
   end
 
@@ -85,6 +107,56 @@ class JourneysTest < Minitest::Test
       
       assert_equal true, json.dig("meta", "last_train_has_left")
       assert_equal false, json.dig("meta", "last_call")
+    end
+  end
+
+  # Test Case 4: Transfer Required
+  def test_transfer_required
+    # Itinerary with two rail legs on different lines
+    leg1 = build_mock_leg("leg-1", "rail", "North - South Line")
+    leg2 = build_mock_leg("leg-2", "rail", "East - West Line")
+    iti = build_mock_itinerary("iti-cross", "2026-06-12T10:18:48Z", legs: [leg1, leg2])
+
+    stub_journeys([iti]) do
+      get "/v1/journeys?from=sandton&to=hatfield"
+      
+      assert_equal 200, last_response.status
+      json = JSON.parse(last_response.body)
+      
+      assert_equal true, json.dig("meta", "transfer_required")
+    end
+  end
+
+  # Test Case 5: Transfer Not Required
+  def test_transfer_not_required
+    # Itinerary with one rail leg
+    leg1 = build_mock_leg("leg-1", "rail", "North - South Line")
+    iti = build_mock_itinerary("iti-single", "2026-06-12T10:18:48Z", legs: [leg1])
+
+    stub_journeys([iti]) do
+      get "/v1/journeys?from=sandton&to=hatfield"
+      
+      assert_equal 200, last_response.status
+      json = JSON.parse(last_response.body)
+      
+      assert_equal false, json.dig("meta", "transfer_required")
+    end
+  end
+
+  # Test Case 6: Pagination Cursor Generation
+  def test_pagination_cursor
+    iti1 = build_mock_itinerary("iti-1", "2026-06-12T10:18:48Z")
+    # The cursor should be 1 second after this last itinerary's departure time
+    
+    stub_journeys([iti1]) do
+      get "/v1/journeys?from=sandton&to=hatfield"
+      
+      assert_equal 200, last_response.status
+      json = JSON.parse(last_response.body)
+      
+      raw_cursor = "2026-06-12T10:18:49Z"
+      expected_opaque = Base64.urlsafe_encode64(raw_cursor, padding: false)
+      assert_equal expected_opaque, json.dig("meta", "next_cursor")
     end
   end
 end

@@ -85,6 +85,9 @@ get "/v1/journeys" do
 
   # Server-side Base64 cursor encoding
   raw_cursor = itineraries.last&.departure_time
+  if raw_cursor
+    raw_cursor = (Time.parse(raw_cursor) + 1).utc.iso8601
+  end
   opaque_cursor = raw_cursor ? Base64.urlsafe_encode64(raw_cursor, padding: false) : nil
 
   meta = {

@@ -413,6 +413,34 @@ Development URL: http://localhost:9292</pre></div>
           The upstream Gautrain API operates strictly on South Africa Standard Time (SAST, UTC+2) and disregards timezone designators (such as <code>Z</code>). To ensure correct pagination sequence and chronological continuity, all UTC timestamp inputs (such as <code>after</code> pagination cursors) are translated into SAST (+02:00) before making the upstream query.
         </div>
 
+        <h3>Metadata Booleans</h3>
+        <table>
+          <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td class="param-name">transfer_required</td>
+            <td><span class="param-type">Boolean</span></td>
+            <td>True if any itinerary requires changing trains (crossing lines) to reach the destination.</td>
+          </tr>
+          <tr>
+            <td class="param-name">last_train_has_left</td>
+            <td><span class="param-type">Boolean</span></td>
+            <td>True if the last train for the current day has already departed (i.e. all itineraries are for the following day or later).</td>
+          </tr>
+          <tr>
+            <td class="param-name">last_call</td>
+            <td><span class="param-type">Boolean</span></td>
+            <td>True if the first returned itinerary departs today, but subsequent ones depart tomorrow or later.</td>
+          </tr>
+          </tbody>
+        </table>
+
         <div class="pag">
           <button class="pb" onclick="nav(-1)">&larr; GET /v1/stations</button>
           <button class="pb pri" onclick="nav(1)">Caching &amp; ETags &rarr;</button>
