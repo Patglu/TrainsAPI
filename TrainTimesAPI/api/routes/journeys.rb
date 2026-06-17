@@ -34,7 +34,7 @@ get "/v1/journeys" do
   end
 
   # 4. Decoupled Pagination — parse Base64 cursor if present.
-  after_param = params["after"]&.strip
+  after_param = (params["after"] || params["next_cursor"])&.strip
   if after_param&.empty?
     after_param = nil
   elsif after_param
@@ -74,6 +74,7 @@ get "/v1/journeys" do
   # Extract values from the wrapped cache payload
   journey_data   = result.value
   itineraries    = journey_data[:itineraries]
+
   journey_hashes = itineraries.map { |iti| iti.to_h(include_intermediate: include_intermediate) }
 
   # Evaluate ETag header validation on the serialized journey content payload
