@@ -115,6 +115,7 @@
       <li><a href="#" data-s="limits" class="nav-link"><span class="nav-num">5</span>Rate Limiting</a></li>
       <li><a href="#" data-s="errors" class="nav-link"><span class="nav-num">6</span>Errors (RFC 7807)</a></li>
       <li><a href="#" data-s="clients" class="nav-link"><span class="nav-num">7</span>iOS &amp; Android Guide</a></li>
+      <li><a href="#" data-s="running" class="nav-link"><span class="nav-num">8</span>Running the Project</a></li>
     </ul>
   </nav>
 
@@ -122,7 +123,7 @@
   <div class="main">
     <div class="topbar">
       <div class="topbar-bc">TrainTimesAPI Contract &nbsp;›&nbsp; <span id="bc-sec">Overview</span></div>
-      <div class="topbar-n" id="cnt">1 / 8</div>
+      <div class="topbar-n" id="cnt">1 / 9</div>
     </div>
 
     <div class="content">
@@ -721,6 +722,44 @@ Development URL: http://localhost:9292</pre></div>
 
         <div class="pag">
           <button class="pb" onclick="nav(-1)">&larr; Errors (RFC 7807)</button>
+          <button class="pb pri" onclick="nav(1)">Running the Project &rarr;</button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════ RUNNING THE PROJECT ══════════════════════ -->
+      <div class="sec" id="sec-running">
+        <div class="sec-eyebrow">Local Development</div>
+        <div class="sec-h">Running the Project</div>
+        <div class="sec-tag">How to start the TrainTimesAPI server</div>
+
+        <p>This project is a lightweight Sinatra application. Follow these instructions to run the server locally for development or testing.</p>
+
+        <h3>Prerequisites</h3>
+        <ul>
+          <li><strong>Ruby</strong>: Ensure you have Ruby installed (version 3.2.2 or compatible).</li>
+          <li><strong>Bundler</strong>: Install dependencies using <code>bundle install</code>.</li>
+        </ul>
+
+        <h3>Starting the Server</h3>
+        <p>You can start the Sinatra server using Puma (the default Rack web server) via the provided executable script:</p>
+        
+        <div class="cw">
+          <div class="ch"><span class="cl">bash</span><span class="cf">Start Development Server</span><button class="cp" onclick="copyCode('start-sh',this)">Copy</button></div>
+          <div class="cb"><pre id="pre-start-sh"><div class="line"><span class="ln">1</span><span class="pl">./bin/start</span></div></pre></div>
+        </div>
+
+        <p>The server will bind to port <code>9292</code> by default. You can access the API at <code>http://localhost:9292</code>.</p>
+
+        <h3>Running the Test Suite</h3>
+        <p>The project includes a comprehensive Minitest suite to verify routing, pagination, and caching behavior.</p>
+
+        <div class="cw">
+          <div class="ch"><span class="cl">bash</span><span class="cf">Run Tests</span><button class="cp" onclick="copyCode('run-tests',this)">Copy</button></div>
+          <div class="cb"><pre id="pre-run-tests"><div class="line"><span class="ln">1</span><span class="pl">bundle exec ruby -Ilib -Itest test/journeys_test.rb</span></div></pre></div>
+        </div>
+
+        <div class="pag">
+          <button class="pb" onclick="nav(-1)">&larr; iOS &amp; Android Guide</button>
           <button class="pb done">Document Complete</button>
         </div>
       </div>
@@ -731,7 +770,7 @@ Development URL: http://localhost:9292</pre></div>
 </div>
 
 <script>
-  const SECS=["overview","health","stations","journeys","caching","limits","errors","clients"];
+  const SECS=["overview","health","stations","journeys","caching","limits","errors","clients","running"];
   let cur=0;
   const total=SECS.length;
 
@@ -750,6 +789,7 @@ Development URL: http://localhost:9292</pre></div>
     if(SECS[i] === 'limits') cleanName = 'Rate Limiting';
     if(SECS[i] === 'errors') cleanName = 'Errors (RFC 7807)';
     if(SECS[i] === 'clients') cleanName = 'iOS & Android Guide';
+    if(SECS[i] === 'running') cleanName = 'Running the Project';
     document.getElementById('bc-sec').textContent = cleanName;
 
     document.getElementById('cnt').textContent=(i+1)+' / '+total;
