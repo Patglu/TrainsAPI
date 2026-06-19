@@ -53,6 +53,8 @@ get "/v1/journeys" do
   include_intermediate = params["include_intermediate"] == "true" || includes.include?("intermediate_stations")
   requested_time       = params["requested_time"]&.strip
   requested_time       = nil if requested_time&.empty?
+  arrive_by            = params["arrive_by"]&.strip
+  arrive_by            = nil if arrive_by&.empty?
 
   # First-page requests can be cached briefly, but cursor pagination must stay live.
   if after_param
@@ -62,14 +64,29 @@ get "/v1/journeys" do
     headers["Cache-Control"] = "public, max-age=#{ttl}"
   end
 
-  # Fetch now returns a CacheStore::Result wrapping our journey data payload
-  result       = JOURNEYS_CLIENT.fetch(
-    origin_slug:       from_slug,
-    destination_slug:  to_slug,
-    after_timestamp:   after_param,
-    requested_time:    requested_time,
-    include_polylines: include_polylines
-  )
+  if arrive_by
+    begin
+      Time.parse(arrive_by)
+    rescue ArgumentError, TypeError
+      send_error("invalid_arrive_by", "The arrive_by time supplied is malformed or invalid.", {}, 400)
+    end
+    
+    result = JOURNEYS_CLIENT.fetch_arrive_by(
+      origin_slug:       from_slug,
+      destination_slug:  to_slug,
+      arrive_by:         arrive_by,
+      include_polylines: include_polylines
+    )
+    after_param = nil # Cursor doesn't apply to initial arrive_by searches
+  else
+    result = JOURNEYS_CLIENT.fetch(
+      origin_slug:       from_slug,
+      destination_slug:  to_slug,
+      after_timestamp:   after_param,
+      requested_time:    requested_time,
+      include_polylines: include_polylines
+    )
+  end
 
   # Extract values from the wrapped cache payload
   journey_data   = result.value

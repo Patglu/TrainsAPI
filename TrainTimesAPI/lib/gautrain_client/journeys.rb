@@ -45,6 +45,68 @@ module GautrainClient
       # Returns a CacheStore::Result — the route layer reads .value and .status.
     end
 
+    def fetch_arrive_by(origin_slug:, destination_slug:, arrive_by:, include_polylines: false)
+      arrive_by_time = Time.parse(arrive_by).getlocal("+02:00")
+      # Start fetching from 2 hours before the requested arrive_by time
+      start_time = arrive_by_time - (2 * 3600)
+
+      ttl = TTLResolver.for_journeys
+      key = cache_key(origin_slug, destination_slug, "arrive_by_#{arrive_by}", include_polylines)
+
+      @cache.fetch(key, ttl: ttl) do
+        all_itineraries = []
+        as_of = nil
+
+        # 1. Fetch initial page
+        first_page = fetch_from_upstream(
+          origin_slug: origin_slug,
+          destination_slug: destination_slug,
+          after_timestamp: nil,
+          requested_time: start_time.iso8601,
+          include_polylines: include_polylines
+        )
+
+        current_itineraries = first_page[:itineraries]
+        all_itineraries.concat(current_itineraries)
+        as_of = first_page[:as_of]
+
+        # 2. Paginate forward until we hit trains arriving AFTER arrive_by
+        loop do
+          break if current_itineraries.empty?
+
+          # If the last train in the current page arrives after our target, we have crossed the boundary
+          last_train_arrival = Time.parse(current_itineraries.last.arrival_time).getlocal("+02:00")
+          break if last_train_arrival > arrive_by_time
+
+          # Otherwise, fetch the next page using the departure time of the last train
+          last_departure = current_itineraries.last.departure_time
+          
+          # To ensure we step strictly forward, we increment the cursor slightly
+          next_cursor = (Time.parse(last_departure) + 1).utc.iso8601
+
+          next_page = fetch_from_upstream(
+            origin_slug: origin_slug,
+            destination_slug: destination_slug,
+            after_timestamp: next_cursor,
+            requested_time: nil,
+            include_polylines: include_polylines
+          )
+
+          current_itineraries = next_page[:itineraries]
+          break if current_itineraries.empty?
+          all_itineraries.concat(current_itineraries)
+        end
+
+        # 3. Filter out trains that arrive after arrive_by
+        valid_itineraries = all_itineraries.select do |iti|
+          Time.parse(iti.arrival_time).getlocal("+02:00") <= arrive_by_time
+        end
+
+        # 4. Return the last 5 trains (or fewer if we hit the start of the day)
+        { itineraries: valid_itineraries.last(5), as_of: as_of }
+      end
+    end
+
     private
 
     def fetch_from_upstream(origin_slug:, destination_slug:, after_timestamp:,

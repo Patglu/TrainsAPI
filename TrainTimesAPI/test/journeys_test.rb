@@ -159,4 +159,60 @@ class JourneysTest < Minitest::Test
       assert_equal expected_opaque, json.dig("meta", "next_cursor")
     end
   end
+
+  # Test Case 7: Arrive By Feature
+  def test_arrive_by
+    # The route calls fetch_arrive_by directly, so we stub that method
+    result = GautrainClient::CacheStore::Result.new(
+      value: { itineraries: [build_mock_itinerary("iti-1", "2026-06-12T10:00:00Z")], as_of: "2026-06-12T10:00:00Z" },
+      status: "fresh",
+      cached_at: Time.now,
+      ttl_seconds: 60
+    )
+    TrainTimesAPI::Server::JOURNEYS_CLIENT.stub(:fetch_arrive_by, result) do
+      get "/v1/journeys?from=sandton&to=hatfield&arrive_by=2026-06-12T12:00:00%2B02:00"
+      
+      assert_equal 200, last_response.status
+      json = JSON.parse(last_response.body)
+      
+      assert_equal 1, json.dig("data", "journeys").size
+      refute_nil json.dig("meta", "next_cursor") # Seamless forward scrolling support
+    end
+  end
+
+  # Test Case 8: Intermediate Stations Nesting
+  def test_intermediate_stations_nesting
+    leg1 = build_mock_leg("leg-1", "rail", "North - South Line")
+    # Add mock waypoints to leg1
+    leg1.waypoints = [
+      { "stop" => { "name" => "Sandton" }, "departureTime" => "2026-06-12T10:00:00Z", "arrivalTime" => "2026-06-12T10:00:00Z" },
+      { "stop" => { "name" => "Marlboro" }, "departureTime" => "2026-06-12T10:05:00Z", "arrivalTime" => "2026-06-12T10:04:00Z" },
+      { "stop" => { "name" => "Midrand" }, "departureTime" => "2026-06-12T10:10:00Z", "arrivalTime" => "2026-06-12T10:09:00Z" },
+      { "stop" => { "name" => "Centurion" }, "departureTime" => "2026-06-12T10:15:00Z", "arrivalTime" => "2026-06-12T10:14:00Z" },
+      { "stop" => { "name" => "Pretoria" }, "departureTime" => "2026-06-12T10:20:00Z", "arrivalTime" => "2026-06-12T10:19:00Z" },
+      { "stop" => { "name" => "Hatfield" }, "departureTime" => "2026-06-12T10:25:00Z", "arrivalTime" => "2026-06-12T10:24:00Z" }
+    ]
+    iti1 = build_mock_itinerary("iti-1", "2026-06-12T10:00:00Z", legs: [leg1])
+
+    stub_journeys([iti1]) do
+      get "/v1/journeys?from=sandton&to=hatfield&include=intermediate_stations"
+      
+      assert_equal 200, last_response.status
+      json = JSON.parse(last_response.body)
+      
+      journey = json.dig("data", "journeys").first
+      
+      # Assert that intermediate_stations is NOT on the journey root
+      assert_nil journey["intermediate_stations"]
+      
+      # Assert that intermediate_stations IS on the leg
+      leg = journey["legs"].first
+      refute_nil leg["intermediate_stations"]
+      
+      # There should be 4 intermediate stations (Marlboro, Midrand, Centurion, Pretoria)
+      assert_equal 4, leg["intermediate_stations"].size
+      assert_equal "marlboro", leg["intermediate_stations"][0]["id"]
+      assert_equal "pretoria", leg["intermediate_stations"][3]["id"]
+    end
+  end
 end

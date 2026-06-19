@@ -90,8 +90,34 @@ module GautrainClient
         self.polyline = coordinates.map { |lng, lat| [lat, lng] }
       end
 
-      def to_h
-        {
+      # Collects and maps intermediate stations along this specific leg, including
+      # their travel duration from the leg's departure station.
+      def intermediate_stations
+        return [] if waypoints.nil? || waypoints.size <= 2
+
+        # Exclude the very first (origin) and very last (destination) stops of this leg
+        intermediate_wps = waypoints[1...-1] || []
+
+        dep_time = Time.parse(departure_time)
+        intermediate_wps.map do |wp|
+          wp_arr_time_str = wp["arrivalTime"]
+          wp_arr_time = Time.parse(wp_arr_time_str).utc if wp_arr_time_str
+          duration = wp_arr_time ? (wp_arr_time - dep_time).to_i : 0
+          
+          stop_name = wp.dig("stop", "name")
+          station_slug = Station::NAME_TO_SLUG[stop_name]
+
+          {
+            id:               station_slug,
+            name:             stop_name,
+            arrival_time:     wp_arr_time ? wp_arr_time.iso8601 : nil,
+            duration_seconds: duration
+          }
+        end
+      end
+
+      def to_h(include_intermediate: false)
+        hash = {
           id:               id,
           mode:             mode,
           line_name:        line_name,
@@ -110,6 +136,10 @@ module GautrainClient
           trip_id:          trip_id,
           polyline:         polyline
         }
+        if include_intermediate
+          hash[:intermediate_stations] = intermediate_stations
+        end
+        hash
       end
 
       # ── Private class helpers ─────────────────────────────────────────────
