@@ -5,7 +5,7 @@ A high-performance Sinatra/Rack microservice for live Gautrain timetables, route
 ## 🚀 Quick Start
 
 ### 1. Prerequisites
-- **Ruby**: Version 3.2+
+- **Ruby**: Version 3.4+
 - **Bundler**: `gem install bundler`
 
 ### 2. Installation
