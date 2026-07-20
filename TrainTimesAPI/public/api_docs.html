@@ -730,28 +730,68 @@ Development URL: http://localhost:9292</pre></div>
       <div class="sec" id="sec-running">
         <div class="sec-eyebrow">Local Development</div>
         <div class="sec-h">Running the Project</div>
-        <div class="sec-tag">How to start the TrainTimesAPI server</div>
+        <div class="sec-tag">How to configure, start, test, and develop the TrainTimesAPI server</div>
 
-        <p>This project is a lightweight Sinatra application. Follow these instructions to run the server locally for development or testing.</p>
+        <p>TrainTimesAPI is a lightweight Sinatra microservice powered by Puma/Rack. Follow these steps to configure, run, and test the server locally.</p>
 
-        <h3>Prerequisites</h3>
-        <ul>
-          <li><strong>Ruby</strong>: Ensure you have Ruby installed (version 3.2.2 or compatible).</li>
-          <li><strong>Bundler</strong>: Install dependencies using <code>bundle install</code>.</li>
-        </ul>
+        <h3>1. Prerequisites &amp; Installation</h3>
+        <p>Ensure you have <strong>Ruby (v3.2+)</strong> and <strong>Bundler</strong> installed. Install gem dependencies from the <code>TrainTimesAPI</code> folder:</p>
 
-        <h3>Starting the Server</h3>
-        <p>You can start the Sinatra server using Puma (the default Rack web server) via the provided executable script:</p>
-        
         <div class="cw">
-          <div class="ch"><span class="cl">bash</span><span class="cf">Start Development Server</span><button class="cp" onclick="copyCode('start-sh',this)">Copy</button></div>
+          <div class="ch"><span class="cl">bash</span><span class="cf">Install Dependencies</span><button class="cp" onclick="copyCode('install-deps',this)">Copy</button></div>
+          <div class="cb"><pre id="pre-install-deps"><div class="line"><span class="ln">1</span><span class="pl">cd TrainTimesAPI</span></div>
+<div class="line"><span class="ln">2</span><span class="pl">bundle install</span></div></pre></div>
+        </div>
+
+        <h3>2. Environment Configuration</h3>
+        <p>The application loads environment variables from a <code>.env</code> file. Configure your secret API key:</p>
+
+        <div class="cw">
+          <div class="ch"><span class="cl">env</span><span class="cf">.env configuration</span><button class="cp" onclick="copyCode('env-cfg',this)">Copy</button></div>
+          <div class="cb"><pre id="pre-env-cfg"><div class="line"><span class="ln">1</span><span class="cm"># TrainTimesAPI/.env</span></div>
+<div class="line"><span class="ln">2</span><span class="pl">API_KEY=change-me-to-something-strong</span></div></pre></div>
+        </div>
+
+        <h3>3. Starting the Server</h3>
+        <p>You can launch the server using the helper executable script or directly via <code>rackup</code>:</p>
+
+        <p><strong>Option A: Using the bin/start script (Recommended)</strong></p>
+        <div class="cw">
+          <div class="ch"><span class="cl">bash</span><span class="cf">Start via bin script</span><button class="cp" onclick="copyCode('start-sh',this)">Copy</button></div>
           <div class="cb"><pre id="pre-start-sh"><div class="line"><span class="ln">1</span><span class="pl">./bin/start</span></div></pre></div>
         </div>
 
-        <p>The server will bind to port <code>9292</code> by default. You can access the API at <code>http://localhost:9292</code>.</p>
+        <p><strong>Option B: Using Rackup / Puma directly</strong></p>
+        <div class="cw">
+          <div class="ch"><span class="cl">bash</span><span class="cf">Start via Rackup</span><button class="cp" onclick="copyCode('start-rackup',this)">Copy</button></div>
+          <div class="cb"><pre id="pre-start-rackup"><div class="line"><span class="ln">1</span><span class="pl">bundle exec rackup -p 9292</span></div></pre></div>
+        </div>
 
-        <h3>Running the Test Suite</h3>
-        <p>The project includes a comprehensive Minitest suite to verify routing, pagination, and caching behavior.</p>
+        <p><strong>Option C: Development with Auto-Reloading</strong></p>
+        <div class="cw">
+          <div class="ch"><span class="cl">bash</span><span class="cf">Start with rerun auto-reload</span><button class="cp" onclick="copyCode('start-rerun',this)">Copy</button></div>
+          <div class="cb"><pre id="pre-start-rerun"><div class="line"><span class="ln">1</span><span class="pl">bundle exec rerun 'rackup -p 9292'</span></div></pre></div>
+        </div>
+
+        <p>The server will run on <code>http://localhost:9292</code>. You can view these interactive docs anytime at <code>http://localhost:9292/api_docs.html</code>.</p>
+
+        <h3>4. Verifying API Endpoints with cURL</h3>
+        <p>Test the endpoints in your terminal:</p>
+
+        <div class="cw">
+          <div class="ch"><span class="cl">bash</span><span class="cf">cURL Examples</span><button class="cp" onclick="copyCode('curl-ex',this)">Copy</button></div>
+          <div class="cb"><pre id="pre-curl-ex"><div class="line"><span class="ln">1</span><span class="cm"># Health check (Unauthenticated)</span></div>
+<div class="line"><span class="ln">2</span><span class="pl">curl -i http://localhost:9292/health</span></div>
+<div class="line"><span class="ln">3</span></div>
+<div class="line"><span class="ln">4</span><span class="cm"># Stations List (Requires X-Api-Key)</span></div>
+<div class="line"><span class="ln">5</span><span class="pl">curl -i -H "X-Api-Key: change-me-to-something-strong" http://localhost:9292/v1/stations</span></div>
+<div class="line"><span class="ln">6</span></div>
+<div class="line"><span class="ln">7</span><span class="cm"># Journeys Search</span></div>
+<div class="line"><span class="ln">8</span><span class="pl">curl -i -H "X-Api-Key: change-me-to-something-strong" "http://localhost:9292/v1/journeys?from=rosebank&to=marlboro"</span></div></pre></div>
+        </div>
+
+        <h3>5. Running the Test Suite</h3>
+        <p>Run the Minitest test suite to verify routing, auth, pagination, and caching behavior:</p>
 
         <div class="cw">
           <div class="ch"><span class="cl">bash</span><span class="cf">Run Tests</span><button class="cp" onclick="copyCode('run-tests',this)">Copy</button></div>

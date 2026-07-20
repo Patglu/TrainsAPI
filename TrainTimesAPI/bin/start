@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+# Change directory to the app root directory (TrainTimesAPI)
+APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$APP_DIR"
+
+echo "==> Checking dependencies..."
+bundle check >/dev/null 2>&1 || bundle install
+
+echo "==> Starting TrainTimesAPI server on http://localhost:9292..."
+echo "==> Interactive API Docs available at http://localhost:9292/api_docs.html"
+echo ""
+
+bundle exec rackup -p 9292 -o 0.0.0.0
